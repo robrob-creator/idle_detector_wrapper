@@ -276,6 +276,14 @@ If you encounter any issues, especially related to:
 
 Please open an issue on the [GitHub repository](https://github.com/robrob-creator/idle_detector_wrapper/issues).
 
+## Support the Project
+
+If this package has been helpful for your project, consider supporting its development:
+
+[![Buy Me A Coffee](https://img.shields.io/badge/-buy_me_a%C2%A0coffee-gray?logo=buy-me-a-coffee)](https://coff.ee/robmoonshoz)
+
+Your support helps maintain and improve this package for the Flutter community! ☕️
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

@@ -11,20 +11,41 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:example/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('IdleDetector demo app loads correctly',
+      (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the idle detector demo loads with initial state
+    expect(find.text('Status: Active'), findsOneWidget);
+    expect(find.text('Times gone idle: 0'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // Verify the keyboard detection toggle is present
+    expect(find.text('Keyboard Detection:'), findsOneWidget);
+    expect(find.byType(Switch), findsOneWidget);
+
+    // Verify the reset button is present
+    expect(find.byIcon(Icons.refresh), findsOneWidget);
+  });
+
+  testWidgets('Keyboard detection toggle works', (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(const MyApp());
+
+    // Find the switch widget
+    final switchFinder = find.byType(Switch);
+    expect(switchFinder, findsOneWidget);
+
+    // Get initial switch state (should be true by default)
+    Switch switchWidget = tester.widget(switchFinder);
+    expect(switchWidget.value, isTrue);
+
+    // Tap the switch to toggle it
+    await tester.tap(switchFinder);
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify switch state changed
+    switchWidget = tester.widget(switchFinder);
+    expect(switchWidget.value, isFalse);
   });
 }
