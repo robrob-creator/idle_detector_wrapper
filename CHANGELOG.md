@@ -1,3 +1,29 @@
+## 1.3.0
+
+### 🚀 New Features
+
+- **onActive Callback**: Added `onActive` parameter to detect when user becomes active after being idle
+- **State Tracking**: Internal state management to track idle/active transitions
+- **Precise Event Handling**: onActive only triggers when transitioning from idle to active state
+
+### 🛠️ Technical Improvements
+
+- Added `_isIdle` state tracking to IdleDetectorState
+- Enhanced `handleUserInteraction()` method to trigger onActive callback appropriately
+- Improved state management to prevent duplicate callback calls
+
+### 🧪 Testing & Examples
+
+- Added comprehensive tests for onActive callback functionality
+- Updated example app to demonstrate active/idle transitions with counters
+- Added tests for multiple idle/active cycles
+
+### 📝 Documentation
+
+- Updated README with onActive callback usage examples
+- Enhanced API reference with new parameter documentation
+- Added behavioral explanations for state transitions
+
 ## 1.2.0
 
 ### 🚀 New Features

@@ -7,12 +7,14 @@ class IdleDetector extends StatefulWidget {
   final Duration idleTime;
   final Widget child;
   final Function? onIdle;
+  final Function? onActive;
   final bool detectKeyboardActivity;
 
   IdleDetector({
     required this.idleTime,
     required this.child,
     this.onIdle,
+    this.onActive,
     bool? detectKeyboardActivity,
   }) : detectKeyboardActivity = detectKeyboardActivity ?? kIsWeb;
 
@@ -22,6 +24,7 @@ class IdleDetector extends StatefulWidget {
 
 class IdleDetectorState extends State<IdleDetector> {
   Timer? _timer;
+  bool _isIdle = false;
 
   @override
   void initState() {
@@ -38,13 +41,22 @@ class IdleDetectorState extends State<IdleDetector> {
   void _resetTimer() {
     _timer?.cancel();
     _timer = Timer(widget.idleTime, () {
-      if (widget.onIdle != null) {
-        widget.onIdle!();
+      if (!_isIdle) {
+        _isIdle = true;
+        if (widget.onIdle != null) {
+          widget.onIdle!();
+        }
       }
     });
   }
 
   void handleUserInteraction() {
+    if (_isIdle) {
+      _isIdle = false;
+      if (widget.onActive != null) {
+        widget.onActive!();
+      }
+    }
     _resetTimer();
   }
 

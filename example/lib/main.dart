@@ -33,6 +33,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _status = 'Active';
   int _idleCount = 0;
+  int _activeCount = 0;
   bool _keyboardDetectionEnabled = true;
 
   void _onIdle() {
@@ -45,6 +46,15 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onActive() {
     setState(() {
       _status = 'Active';
+      _activeCount++;
+    });
+  }
+
+  void _resetCounts() {
+    setState(() {
+      _status = 'Active';
+      _idleCount = 0;
+      _activeCount = 0;
     });
   }
 
@@ -53,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return IdleDetector(
       idleTime: const Duration(seconds: 3),
       onIdle: _onIdle,
+      onActive: _onActive,
       detectKeyboardActivity: _keyboardDetectionEnabled,
       child: Scaffold(
         appBar: AppBar(
@@ -75,6 +86,10 @@ class _MyHomePageState extends State<MyHomePage> {
               const SizedBox(height: 20),
               Text(
                 'Times gone idle: $_idleCount',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Text(
+                'Times became active: $_activeCount',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 20),
@@ -147,8 +162,8 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: _onActive,
-          tooltip: 'Reset to Active',
+          onPressed: _resetCounts,
+          tooltip: 'Reset Counters',
           child: const Icon(Icons.refresh),
         ),
       ),
