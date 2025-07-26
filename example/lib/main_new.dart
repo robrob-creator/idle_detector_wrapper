@@ -33,7 +33,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _status = 'Active';
   int _idleCount = 0;
-  bool _keyboardDetectionEnabled = true;
 
   void _onIdle() {
     setState(() {
@@ -53,7 +52,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return IdleDetector(
       idleTime: const Duration(seconds: 3),
       onIdle: _onIdle,
-      detectKeyboardActivity: _keyboardDetectionEnabled,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -77,29 +75,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 'Times gone idle: $_idleCount',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
-              const SizedBox(height: 20),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Keyboard Detection:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Switch(
-                        value: _keyboardDetectionEnabled,
-                        onChanged: (value) {
-                          setState(() {
-                            _keyboardDetectionEnabled = value;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
               const SizedBox(height: 40),
               const Card(
                 child: Padding(
@@ -115,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Text('• Move your mouse'),
                       Text('• Click anywhere'),
                       Text('• Scroll (especially important for web!)'),
-                      Text('• Use keyboard shortcuts (if enabled)'),
+                      Text('• Use keyboard shortcuts'),
                       Text('• Drag elements'),
                       SizedBox(height: 10),
                       Text(

@@ -1,6 +1,6 @@
 name: idle_detector_wrapper
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
+description: A comprehensive Flutter package for idle detection with full web scroll support, mouse movement, keyboard input, and touch gesture detection.
+version: 1.2.0
 repository: https://github.com/robrob-creator/idle_detector_wrapper
 
 environment:
@@ -10,8 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_hooks: ^0.18.5+1
 
 dev_dependencies:
+  flutter_test:
+    sdk: flutter
   lints: ^2.0.0
   test: ^1.21.0

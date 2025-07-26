@@ -1,22 +1,26 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
 
 class IdleDetector extends StatefulWidget {
   final Duration idleTime;
   final Widget child;
   final Function? onIdle;
+  final bool detectKeyboardActivity;
 
   IdleDetector({
     required this.idleTime,
     required this.child,
     this.onIdle,
-  });
+    bool? detectKeyboardActivity,
+  }) : detectKeyboardActivity = detectKeyboardActivity ?? kIsWeb;
 
   @override
-  _IdleDetectorState createState() => _IdleDetectorState();
+  IdleDetectorState createState() => IdleDetectorState();
 }
 
-class _IdleDetectorState extends State<IdleDetector> {
+class IdleDetectorState extends State<IdleDetector> {
   Timer? _timer;
 
   @override
@@ -46,21 +50,41 @@ class _IdleDetectorState extends State<IdleDetector> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
+    return Listener(
+      onPointerMove: (event) {
         handleUserInteraction();
       },
-      onPanDown: (details) {
+      onPointerDown: (event) {
         handleUserInteraction();
       },
-      onHorizontalDragEnd: (details) {
-        handleUserInteraction();
+      onPointerSignal: (event) {
+        // Handle scroll events for web
+        if (event is PointerScrollEvent) {
+          handleUserInteraction();
+        }
       },
-      onVerticalDragEnd: (details) {
-        handleUserInteraction();
-      },
-      child: widget.child,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          handleUserInteraction();
+        },
+        onPanDown: (details) {
+          handleUserInteraction();
+        },
+        onPanUpdate: (details) {
+          handleUserInteraction();
+        },
+        child: widget.detectKeyboardActivity
+            ? Focus(
+                autofocus: true,
+                onKeyEvent: (node, event) {
+                  handleUserInteraction();
+                  return KeyEventResult.ignored;
+                },
+                child: widget.child,
+              )
+            : widget.child,
+      ),
     );
   }
 }
