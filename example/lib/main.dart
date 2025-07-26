@@ -110,39 +110,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ],
                     ),
-<<<<<<< HEAD
-              ),
-              const SizedBox(height: 20),
-              Text(
-                'Times gone idle: $_idleCount',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              Text(
-                'Times became active: $_activeCount',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 20),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Keyboard Detection:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Switch(
-                        value: _keyboardDetectionEnabled,
-                        onChanged: (value) {
-                          setState(() {
-                            _keyboardDetectionEnabled = value;
-                          });
-                        },
-                      ),
-                    ],
-=======
->>>>>>> 35f6c71fee537d840a1bc6d7ed658621807ca55c
                   ),
                 ),
                 const SizedBox(height: 40),

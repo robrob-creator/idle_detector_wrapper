@@ -33,6 +33,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _status = 'Active';
   int _idleCount = 0;
+  int _activeCount = 0;
 
   void _onIdle() {
     setState(() {
@@ -44,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onActive() {
     setState(() {
       _status = 'Active';
+      _activeCount++;
     });
   }
 
@@ -52,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return IdleDetector(
       idleTime: const Duration(seconds: 3),
       onIdle: _onIdle,
+      onActive: _onActive,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -73,6 +76,11 @@ class _MyHomePageState extends State<MyHomePage> {
               const SizedBox(height: 20),
               Text(
                 'Times gone idle: $_idleCount',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Times became active: $_activeCount',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 40),
