@@ -16,6 +16,22 @@ A Flutter package that provides comprehensive idle detection for Flutter applica
 
 This package specifically addresses the issue where **mouse scrolling in Flutter Web applications was not being detected as user activity**, causing idle callbacks to trigger inappropriately during scrolling.
 
+## Callback Benefits
+
+### 🔄 **Dual State Tracking**
+
+- **`onIdle`**: Triggered when user becomes inactive after the specified duration
+- **`onActive`**: Triggered when user resumes activity after being idle (NEW!)
+
+### 💡 **Real-world Use Cases**
+
+- **Session Management**: Extend user sessions when they become active
+- **Analytics**: Track user engagement patterns and idle/active cycles
+- **Power Management**: Resume full functionality when user returns
+- **UI Updates**: Show/hide idle warnings or welcome-back messages
+- **Auto-save**: Trigger save operations on activity resumption
+- **Video/Audio**: Resume paused content when user becomes active
+
 ## Installation
 
 Add this to your package's `pubspec.yaml` file:
@@ -54,6 +70,11 @@ class _MyAppState extends State<MyApp> {
       onIdle: () {
         setState(() {
           status = 'User is idle';
+        });
+      },
+      onActive: () {
+        setState(() {
+          status = 'User is active';
         });
       },
       child: Scaffold(
@@ -205,6 +226,7 @@ The `IdleDetector` responds to all these user interactions:
 | ------------------------ | ----------- | -------- | ------------------------------------------------------------------------------------------------- |
 | `idleTime`               | `Duration`  | Yes      | Time duration before considering user idle                                                        |
 | `onIdle`                 | `Function?` | No       | Callback function called when user becomes idle                                                   |
+| `onActive`               | `Function?` | No       | Callback function called when user becomes active after being idle                                |
 | `child`                  | `Widget`    | Yes      | The widget to wrap with idle detection                                                            |
 | `detectKeyboardActivity` | `bool?`     | No       | Enable/disable keyboard activity detection. Defaults to `true` on web, `false` on other platforms |
 
