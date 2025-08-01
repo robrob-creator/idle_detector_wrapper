@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:idle_detector_wrapper/idle_detector_wrapper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,6 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _status = 'Active';
   int _idleCount = 0;
   int _activeCount = 0;
+  bool _persistTimestamp = false; // Start disabled for demo purposes
 
   void _onIdle() {
     setState(() {
@@ -49,12 +51,30 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _togglePersistence() {
+    setState(() {
+      _persistTimestamp = !_persistTimestamp;
+    });
+  }
+
+  Future<void> _clearStoredTimestamp() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('my_custom_idle_key'); // Matches the timestampKey below
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Stored timestamp cleared')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return IdleDetector(
       idleTime: const Duration(seconds: 3),
       onIdle: _onIdle,
       onActive: _onActive,
+      persistTimestamp: _persistTimestamp,
+      timestampKey: 'my_custom_idle_key', // Optional custom key
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -84,6 +104,62 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 40),
+              Card(
+                color: Colors.blue.shade50,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Timestamp Persistence (NEW!):',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Status: ${_persistTimestamp ? "ENABLED" : "DISABLED"}',
+                        style: TextStyle(
+                          color: _persistTimestamp ? Colors.green : Colors.red,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        '• When enabled, your last activity is saved',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const Text(
+                        '• If you close and reopen the app, idle state persists',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const Text(
+                        '• When disabled (default), works like the original version',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 15),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: _togglePersistence,
+                            child:
+                                Text(_persistTimestamp ? 'Disable' : 'Enable'),
+                          ),
+                          const SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: _clearStoredTimestamp,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.orange,
+                            ),
+                            child: const Text('Clear Stored Data'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
               const Card(
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
@@ -105,6 +181,15 @@ class _MyHomePageState extends State<MyHomePage> {
                         'After 3 seconds of inactivity, status will change to "Idle"',
                         style: TextStyle(fontStyle: FontStyle.italic),
                       ),
+                      SizedBox(height: 5),
+                      Text(
+                        'Try: Enable persistence → Go idle → Close app → Reopen app',
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color: Colors.blue,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -121,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text('Scrollable Item ${index + 1}'),
-                      subtitle: Text('Try scrolling this list!'),
+                      subtitle: const Text('Try scrolling this list!'),
                     );
                   },
                 ),

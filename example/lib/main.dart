@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:idle_detector_wrapper/idle_detector_wrapper.dart';
 
@@ -35,11 +36,30 @@ class _MyHomePageState extends State<MyHomePage> {
   int _idleCount = 0;
   int _activeCount = 0;
   bool _keyboardDetectionEnabled = true;
+  bool _mouseActivityDetected = false;
+  final _controller = IdleDetectorController();
+  Timer? _uiUpdateTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Update UI every 100ms to show remaining time
+    _uiUpdateTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _uiUpdateTimer?.cancel();
+    super.dispose();
+  }
 
   void _onIdle() {
     setState(() {
       _status = 'Idle';
       _idleCount++;
+      _mouseActivityDetected = false;
     });
   }
 
@@ -47,6 +67,15 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _status = 'Active';
       _activeCount++;
+      _mouseActivityDetected = true;
+      // Reset the indicator after a short delay
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          setState(() {
+            _mouseActivityDetected = false;
+          });
+        }
+      });
     });
   }
 
@@ -55,6 +84,18 @@ class _MyHomePageState extends State<MyHomePage> {
       _status = 'Active';
       _idleCount = 0;
       _activeCount = 0;
+      _mouseActivityDetected = false;
+    });
+    _controller.reset();
+  }
+
+  void _togglePause() {
+    setState(() {
+      if (_controller.isPaused) {
+        _controller.resume();
+      } else {
+        _controller.pause();
+      }
     });
   }
 
@@ -62,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return IdleDetector(
       idleTime: const Duration(seconds: 3),
+      controller: _controller,
       onIdle: _onIdle,
       onActive: _onActive,
       detectKeyboardActivity: _keyboardDetectionEnabled,
@@ -89,6 +131,48 @@ class _MyHomePageState extends State<MyHomePage> {
                   'Times gone idle: $_idleCount',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
+                const SizedBox(height: 10),
+                Text(
+                  'Times became active: $_activeCount',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 10),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: _mouseActivityDetected
+                        ? Colors.green.shade100
+                        : Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color:
+                          _mouseActivityDetected ? Colors.green : Colors.grey,
+                      width: 2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.mouse,
+                        color:
+                            _mouseActivityDetected ? Colors.green : Colors.grey,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Mouse Activity',
+                        style: TextStyle(
+                          color: _mouseActivityDetected
+                              ? Colors.green.shade700
+                              : Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 20),
                 Card(
                   child: Padding(
@@ -112,6 +196,77 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 20),
+                Card(
+                  color: Colors.orange.shade50,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Idle Detection Control (NEW!):',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        const SizedBox(height: 15),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Status: ${_controller.isPaused ? "PAUSED" : "RUNNING"}',
+                                    style: TextStyle(
+                                      color: _controller.isPaused
+                                          ? Colors.orange
+                                          : Colors.green,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    'Remaining: ${_controller.remainingTime?.inSeconds ?? "N/A"}s',
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            ElevatedButton.icon(
+                              onPressed: _togglePause,
+                              icon: Icon(_controller.isPaused
+                                  ? Icons.play_arrow
+                                  : Icons.pause),
+                              label: Text(
+                                  _controller.isPaused ? 'Resume' : 'Pause'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _controller.isPaused
+                                    ? Colors.green
+                                    : Colors.orange,
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          '• Pause: Stops idle detection temporarily',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        const Text(
+                          '• Resume: Continues with remaining time',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        const Text(
+                          '• Reset: Restarts the idle timer (via refresh button)',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 40),
                 const Card(
                   child: Padding(
@@ -124,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 10),
-                        Text('• Move your mouse'),
+                        Text('• Move your mouse (includes hover, enter, exit)'),
                         Text('• Click anywhere'),
                         Text('• Scroll (especially important for web!)'),
                         Text('• Use keyboard shortcuts (if enabled)'),
@@ -150,7 +305,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: Text('Scrollable Item ${index + 1}'),
-                        subtitle: Text('Try scrolling this list!'),
+                        subtitle: const Text('Try scrolling this list!'),
                       );
                     },
                   ),

@@ -4,10 +4,11 @@ A Flutter package that provides comprehensive idle detection for Flutter applica
 
 ## Features
 
-- 🖱️ **Mouse Movement Detection**: Detects mouse movement on all platforms
+- 🖱️ **Enhanced Mouse Detection**: Detects all mouse activity including movement, hover, enter, and exit events
 - 🖲️ **Scroll Detection**: Full support for mouse wheel scrolling (especially important for Flutter Web)
 - 👆 **Touch Gestures**: Supports tap, drag, and pan gestures on mobile
 - ⌨️ **Keyboard Input**: Detects keyboard interactions
+- 💾 **Timestamp Persistence**: Optional session continuity across app restarts
 - 🎯 **Cross-Platform**: Works on mobile, web, and desktop platforms
 - ⏱️ **Customizable Timeout**: Set your desired idle duration
 - 🔄 **Easy Integration**: Simple widget wrapper approach
@@ -38,7 +39,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  idle_detector_wrapper: ^1.0.0
+  idle_detector_wrapper: ^1.2.0
 ```
 
 Then run:
@@ -90,6 +91,59 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
       ),
+    );
+  }
+}
+```
+
+### Pause/Resume Control (NEW!)
+
+Control idle detection programmatically with pause, resume, and reset functionality:
+
+```dart
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final _controller = IdleDetectorController();
+  String status = 'Active';
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        IdleDetector(
+          idleTime: const Duration(seconds: 30),
+          controller: _controller, // Add controller
+          onIdle: () => setState(() => status = 'Idle'),
+          onActive: () => setState(() => status = 'Active'),
+          child: MyWidget(),
+        ),
+        // Control buttons
+        Row(
+          children: [
+            ElevatedButton(
+              onPressed: _controller.pause,
+              child: Text('Pause'),
+            ),
+            ElevatedButton(
+              onPressed: _controller.resume,
+              child: Text('Resume'),
+            ),
+            ElevatedButton(
+              onPressed: _controller.reset,
+              child: Text('Reset'),
+            ),
+          ],
+        ),
+        // Status display
+        Text('Status: $status'),
+        Text('Is Paused: ${_controller.isPaused}'),
+        Text('Is Idle: ${_controller.isIdle}'),
+        Text('Remaining Time: ${_controller.remainingTime?.inSeconds ?? "N/A"}s'),
+      ],
     );
   }
 }
@@ -207,11 +261,78 @@ class _IdleDetectorExampleState extends State<IdleDetectorExample> {
 }
 ```
 
+### Timestamp Persistence (NEW!)
+
+**v1.2.0+** includes optional timestamp persistence across app sessions. When enabled, the last user activity timestamp is saved to local storage, allowing the idle state to persist even if the user closes and reopens the app.
+
+#### Enabling Timestamp Persistence
+
+```dart
+// Enable timestamp persistence
+IdleDetector(
+  idleTime: const Duration(seconds: 30),
+  persistTimestamp: true, // Enable the new feature
+  onIdle: () => print('User is idle'),
+  onActive: () => print('User is active'),
+  child: MyWidget(),
+)
+```
+
+#### Custom Timestamp Key
+
+```dart
+// Use a custom key for storing the timestamp
+IdleDetector(
+  idleTime: const Duration(seconds: 30),
+  persistTimestamp: true,
+  timestampKey: 'my_app_idle_timestamp', // Custom storage key
+  onIdle: () => print('User is idle'),
+  child: MyWidget(),
+)
+```
+
+#### Default Behavior (Backward Compatible)
+
+```dart
+// Default behavior - timestamp persistence is disabled for backward compatibility
+IdleDetector(
+  idleTime: const Duration(seconds: 30),
+  onIdle: () => print('User is idle'),
+  onActive: () => print('User is active'),
+  // persistTimestamp: false, // This is the default
+  child: MyWidget(),
+)
+```
+
+#### How It Works
+
+1. **Activity Tracking**: Every user interaction saves a timestamp to SharedPreferences
+2. **App Restart**: When the app starts, it checks the last activity timestamp
+3. **State Calculation**: If enough time has passed, the user starts in the "idle" state
+4. **Remaining Time**: If not enough time has passed, the timer starts with the remaining duration
+
+#### Benefits
+
+- **Session Continuity**: Idle states persist across app launches
+- **Accurate Timing**: No false "active" states when reopening apps
+- **User Experience**: Consistent behavior regardless of app lifecycle
+- **Backward Compatible**: Existing code works without changes
+
+#### Storage Details
+
+- **Platform**: Uses SharedPreferences (available on all Flutter platforms)
+- **Key**: Default key is `'idle_detector_last_activity'` (customizable)
+- **Data**: Stores timestamp as milliseconds since epoch
+- **Fallback**: If storage fails, falls back to normal (non-persistent) behavior
+
+```
+
 ## Detected User Activities
 
 The `IdleDetector` responds to all these user interactions:
 
 - **Mouse movements** (desktop/web)
+- **Mouse hover events** (enter/exit/hover) ⭐
 - **Mouse clicks** (all buttons)
 - **Mouse wheel scrolling** ⭐ (crucial for web apps)
 - **Touch gestures** (tap, drag, pan)
@@ -222,15 +343,32 @@ The `IdleDetector` responds to all these user interactions:
 
 ### IdleDetector
 
-| Parameter                | Type        | Required | Description                                                                                       |
-| ------------------------ | ----------- | -------- | ------------------------------------------------------------------------------------------------- |
-| `idleTime`               | `Duration`  | Yes      | Time duration before considering user idle                                                        |
-| `onIdle`                 | `Function?` | No       | Callback function called when user becomes idle                                                   |
-| `onActive`               | `Function?` | No       | Callback function called when user becomes active after being idle                                |
-| `child`                  | `Widget`    | Yes      | The widget to wrap with idle detection                                                            |
-| `detectKeyboardActivity` | `bool?`     | No       | Enable/disable keyboard activity detection. Defaults to `true` on web, `false` on other platforms |
+| Parameter                | Type        | Required | Default                          | Description                                                                                       |
+| ------------------------ | ----------- | -------- | -------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `idleTime`               | `Duration`  | Yes      | -                                | Time duration before considering user idle                                                        |
+| `onIdle`                 | `Function?` | No       | `null`                           | Callback function called when user becomes idle                                                   |
+| `onActive`               | `Function?` | No       | `null`                           | Callback function called when user becomes active after being idle                                |
+| `child`                  | `Widget`    | Yes      | -                                | The widget to wrap with idle detection                                                            |
+| `detectKeyboardActivity` | `bool?`     | No       | `true` on web, `false` elsewhere | Enable/disable keyboard activity detection. Defaults to `true` on web, `false` on other platforms |
+| `persistTimestamp`       | `bool`      | No       | `false`                          | Enable/disable timestamp persistence across app sessions                                          |
+| `timestampKey`           | `String?`   | No       | `'idle_detector_last_activity'`  | Custom key for storing timestamp in SharedPreferences                                             |
+| `controller`             | `IdleDetectorController?` | No | `null`                     | Controller for pause/resume/reset functionality                                                   |
 
-### Methods
+### IdleDetectorController
+
+| Method        | Description                                           |
+| ------------- | ----------------------------------------------------- |
+| `pause()`     | Pause idle detection timer                            |
+| `resume()`    | Resume idle detection timer with remaining time       |
+| `reset()`     | Reset idle detection timer and state                  |
+
+| Property       | Type      | Description                                         |
+| -------------- | --------- | --------------------------------------------------- |
+| `isIdle`       | `bool`    | Returns true if currently in idle state            |
+| `isPaused`     | `bool`    | Returns true if idle detection is paused           |
+| `remainingTime`| `Duration?` | Returns remaining time until idle state (if active) |
+
+### Methods (Legacy)
 
 - `handleUserInteraction()`: Manually reset the idle timer
 
@@ -287,3 +425,4 @@ Your support helps maintain and improve this package for the Flutter community! 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+```

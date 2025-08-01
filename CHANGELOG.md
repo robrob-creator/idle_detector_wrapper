@@ -1,3 +1,37 @@
+## 1.2.0
+
+### 🚀 New Features
+
+- **Pause/Resume Control**: Added IdleDetectorController for programmatic control
+- **Enhanced Mouse Detection**: Added MouseRegion for comprehensive mouse activity detection
+- **Mouse Hover Events**: Now detects mouse enter, exit, and hover events in addition to movement
+- **Remaining Time Tracking**: Get real-time remaining time until idle state
+- **State Querying**: Check if detector is idle or paused programmatically
+- **Timer Reset**: Manually reset idle detection timer and state
+- **Timestamp Persistence**: Added optional timestamp persistence across app sessions using SharedPreferences
+- **Session Continuity**: When enabled, idle state persists when app is closed and reopened
+- **Custom Storage Key**: Added `timestampKey` parameter for custom SharedPreferences keys
+- **Backward Compatibility**: Timestamp persistence is disabled by default to maintain backward compatibility
+- **Smart Timer Initialization**: When enabled, app starts with correct idle state based on stored timestamp
+- **Graceful Fallback**: If SharedPreferences fails, falls back to normal behavior
+
+### 🛠️ Technical Improvements
+
+- **Controller Pattern**: Implemented IdleDetectorController for external state management
+- **Pause State Management**: Proper handling of remaining time during pause/resume
+- **Enhanced State Tracking**: Added pause state and remaining time calculation
+- **MouseRegion Integration**: Layered mouse detection for comprehensive coverage
+- **Storage Integration**: Uses SharedPreferences for cross-platform timestamp storage
+- **Efficient State Calculation**: Calculates remaining idle time on app startup
+- **Error Handling**: Robust error handling for storage operations
+- **Memory Management**: Proper cleanup of storage operations
+
+### 📖 Documentation
+
+- **Updated README**: Added comprehensive documentation for timestamp persistence
+- **API Reference**: Updated parameter documentation with new options
+- **Usage Examples**: Added examples for different persistence scenarios
+
 ## 1.1.0
 
 ### 🚀 New Features
