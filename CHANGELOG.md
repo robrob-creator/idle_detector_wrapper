@@ -31,6 +31,9 @@
 - **Updated README**: Added comprehensive documentation for timestamp persistence
 - **API Reference**: Updated parameter documentation with new options
 - **Usage Examples**: Added examples for different persistence scenarios
+- **README Formatting**: Fixed markdown formatting issues and code block syntax
+- **Table Formatting**: Corrected API reference table formatting
+- **Documentation Structure**: Improved overall documentation readability
 
 ## 1.1.0
 

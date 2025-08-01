@@ -352,7 +352,6 @@ The `IdleDetector` responds to all these user interactions:
 | `timestampKey`           | `String?`                 | No       | `'idle_detector_last_activity'`  | Custom key for storing timestamp in SharedPreferences                                             |
 | `controller`             | `IdleDetectorController?` | No       | `null`                           | Controller for pause/resume/reset functionality                                                   |
 
-```
 ### IdleDetectorController
 
 | Method     | Description                                     |
@@ -366,8 +365,6 @@ The `IdleDetector` responds to all these user interactions:
 | `isIdle`        | `bool`      | Returns true if currently in idle state             |
 | `isPaused`      | `bool`      | Returns true if idle detection is paused            |
 | `remainingTime` | `Duration?` | Returns remaining time until idle state (if active) |
-
-```
 
 ### Methods (Legacy)
 
