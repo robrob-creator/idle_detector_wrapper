@@ -325,8 +325,6 @@ IdleDetector(
 - **Data**: Stores timestamp as milliseconds since epoch
 - **Fallback**: If storage fails, falls back to normal (non-persistent) behavior
 
-```
-
 ## Detected User Activities
 
 The `IdleDetector` responds to all these user interactions:
@@ -343,31 +341,32 @@ The `IdleDetector` responds to all these user interactions:
 
 ### IdleDetector
 
-| Parameter                | Type        | Required | Default                          | Description                                                                                       |
-| ------------------------ | ----------- | -------- | -------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `idleTime`               | `Duration`  | Yes      | -                                | Time duration before considering user idle                                                        |
-| `onIdle`                 | `Function?` | No       | `null`                           | Callback function called when user becomes idle                                                   |
-| `onActive`               | `Function?` | No       | `null`                           | Callback function called when user becomes active after being idle                                |
-| `child`                  | `Widget`    | Yes      | -                                | The widget to wrap with idle detection                                                            |
-| `detectKeyboardActivity` | `bool?`     | No       | `true` on web, `false` elsewhere | Enable/disable keyboard activity detection. Defaults to `true` on web, `false` on other platforms |
-| `persistTimestamp`       | `bool`      | No       | `false`                          | Enable/disable timestamp persistence across app sessions                                          |
-| `timestampKey`           | `String?`   | No       | `'idle_detector_last_activity'`  | Custom key for storing timestamp in SharedPreferences                                             |
-| `controller`             | `IdleDetectorController?` | No | `null`                     | Controller for pause/resume/reset functionality                                                   |
+| Parameter                | Type                      | Required | Default                          | Description                                                                                       |
+| ------------------------ | ------------------------- | -------- | -------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `idleTime`               | `Duration`                | Yes      | -                                | Time duration before considering user idle                                                        |
+| `onIdle`                 | `Function?`               | No       | `null`                           | Callback function called when user becomes idle                                                   |
+| `onActive`               | `Function?`               | No       | `null`                           | Callback function called when user becomes active after being idle                                |
+| `child`                  | `Widget`                  | Yes      | -                                | The widget to wrap with idle detection                                                            |
+| `detectKeyboardActivity` | `bool?`                   | No       | `true` on web, `false` elsewhere | Enable/disable keyboard activity detection. Defaults to `true` on web, `false` on other platforms |
+| `persistTimestamp`       | `bool`                    | No       | `false`                          | Enable/disable timestamp persistence across app sessions                                          |
+| `timestampKey`           | `String?`                 | No       | `'idle_detector_last_activity'`  | Custom key for storing timestamp in SharedPreferences                                             |
+| `controller`             | `IdleDetectorController?` | No       | `null`                           | Controller for pause/resume/reset functionality                                                   |
 
 ### IdleDetectorController
 
-| Method        | Description                                           |
-| ------------- | ----------------------------------------------------- |
-| `pause()`     | Pause idle detection timer                            |
-| `resume()`    | Resume idle detection timer with remaining time       |
-| `reset()`     | Reset idle detection timer and state                  |
+| Method     | Description                                     |
+| ---------- | ----------------------------------------------- |
+| `pause()`  | Pause idle detection timer                      |
+| `resume()` | Resume idle detection timer with remaining time |
+| `reset()`  | Reset idle detection timer and state            |
 
-| Property       | Type      | Description                                         |
-| -------------- | --------- | --------------------------------------------------- |
-| `isIdle`       | `bool`    | Returns true if currently in idle state            |
-| `isPaused`     | `bool`    | Returns true if idle detection is paused           |
-| `remainingTime`| `Duration?` | Returns remaining time until idle state (if active) |
+| Property        | Type        | Description                                         |
+| --------------- | ----------- | --------------------------------------------------- |
+| `isIdle`        | `bool`      | Returns true if currently in idle state             |
+| `isPaused`      | `bool`      | Returns true if idle detection is paused            |
+| `remainingTime` | `Duration?` | Returns remaining time until idle state (if active) |
 
+```
 ### Methods (Legacy)
 
 - `handleUserInteraction()`: Manually reset the idle timer
@@ -425,4 +424,5 @@ Your support helps maintain and improve this package for the Flutter community! 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
 ```
