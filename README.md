@@ -352,6 +352,7 @@ The `IdleDetector` responds to all these user interactions:
 | `timestampKey`           | `String?`                 | No       | `'idle_detector_last_activity'`  | Custom key for storing timestamp in SharedPreferences                                             |
 | `controller`             | `IdleDetectorController?` | No       | `null`                           | Controller for pause/resume/reset functionality                                                   |
 
+```
 ### IdleDetectorController
 
 | Method     | Description                                     |
@@ -367,6 +368,7 @@ The `IdleDetector` responds to all these user interactions:
 | `remainingTime` | `Duration?` | Returns remaining time until idle state (if active) |
 
 ```
+
 ### Methods (Legacy)
 
 - `handleUserInteraction()`: Manually reset the idle timer
@@ -424,5 +426,3 @@ Your support helps maintain and improve this package for the Flutter community! 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-```
